@@ -18,5 +18,5 @@
 
     - name: show if reboot is rquired
       debug:
-        msg: "Server {{ inventory_hostname }} requires a reboot"
+        msg: "{{ inventory_hostname | reboot_needed }}"
       when: reboot_required.stat.exists

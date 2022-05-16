@@ -1,0 +1,4 @@
+---
+- import_playbook: update-archlinux.yaml
+- import_playbook: update-debian.yaml
+- import_playbook: update-docker.yaml
