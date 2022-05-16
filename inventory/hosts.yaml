@@ -1,0 +1,35 @@
+---
+all:
+  hosts:
+    ffw-server:
+      ansible_host: ffw
+      docker_compose_path: "/opt/docker/"
+      ansible_become_password: "{{ ffw_become_password }}"
+    ffw-nextcloud:
+      docker_compose_path: "/srv/docker/"
+      ansible_become_password: "{{ ffw_become_password }}"
+    bouni-horus:
+      ansible_connection: local
+      docker_compose_path: "/opt/docker/"
+      ansible_become_password: "{{ horus_become_password }}"
+    bouni-services:
+      ansible_host: bouni-services
+      docker_compose_path: "/home/bouni/"
+      ansible_become_password: "{{ bouni_services_become_password }}"
+  children:
+    ffw:
+      hosts:
+        ffw-server:
+        ffw-nextcloud:
+    bouni:
+      hosts:
+        bouni-horus:
+        bouni-services:
+    archlinux:
+      hosts:
+        bouni-horus:
+        ffw-server:
+        ffw-nextcloud:
+    debian:
+      hosts:
+        bouni-services:

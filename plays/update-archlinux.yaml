@@ -1,0 +1,35 @@
+---
+- hosts: archlinux
+  name: Update all hosts running Archlinux
+  tasks:
+    - name: Create the `aur_builder` user
+      become: true
+      ansible.builtin.user:
+        name: aur_builder
+        create_home: true
+        group: wheel
+
+    - name: Allow the `aur_builder` user to run `sudo pacman` without a password
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers.d/11-install-aur_builder
+        line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
+        create: true
+        validate: "visudo -cf %s"
+
+    - name: Upgrade the system using yay, only act on AUR packages.
+      become: true
+      become_user: aur_builder
+      kewlfft.aur.aur:
+        upgrade: true
+        use: yay
+
+    - name: Check if reboot is required
+      ansible.builtin.shell:
+        cmd: 'if [[ $(pacman -Q linux | cut -d " " -f 2 | sed s/.arch/-arch/) > $(uname -r)  ]]; then echo REBOOT; fi'
+      register: reboot_required
+
+    - name: show if reboot is rquired
+      debug:
+        msg: "Server {{ inventory_hostname  }} requires a reboot"
+      when: reboot_required.stdout == "REBOOT"

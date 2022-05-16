@@ -1,0 +1,12 @@
+---
+
+- hosts: all
+  name: Update all docker containers (pull & up -d)
+  tasks:
+    - name: pull and restart all containers
+      become: yes
+      docker_compose:
+        project_src: '{{ hostvars[inventory_hostname].docker_compose_path }}'
+        pull: yes
+        build: no
+        state: present
